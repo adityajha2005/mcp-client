@@ -1,0 +1,17 @@
+{
+    "name": "mcp-server-client-integration",
+    "version": "1.0.0",
+    "description": "MCP server-client integration example",
+    "main": "server/index.js",
+    "scripts": {
+        "start-server": "node ./server/index.js",
+        "start-client": "node ./client/client.js"
+    },
+    "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.0.3",
+        "fs": "0.0.1-security",
+        "path": "^0.12.7",
+        "zod": "^3.23.8"
+    },
+    "type": "module"
+}
