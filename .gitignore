@@ -1,1 +1,14 @@
+# Environment variables
+.env
+
+# Google API credentials
+credentials.json
+token.pickle
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Node modules
 /node_modules
