@@ -74,38 +74,48 @@ class TwitterPoster:
         try:
             print("Navigating to Twitter home...")
             self.driver.get("https://twitter.com/home")
+            time.sleep(3)  # Wait for page to fully load
             
-            # Wait for and click tweet button
-            print("Waiting for tweet compose box...")
+            # Click the "Post" button to open compose box
+            print("Opening tweet compose box...")
+            compose_button = WebDriverWait(self.driver, 20).until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, '[data-testid="SideNav_NewTweet_Button"]'))
+            )
+            compose_button.click()
+            time.sleep(1)
+            
+            # Enter tweet content
+            print("Entering tweet content...")
             tweet_input = WebDriverWait(self.driver, 20).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, '[data-testid="tweetTextarea_0"]'))
             )
             tweet_input.send_keys(content)
+            time.sleep(1)
             
-            # Click the 'Tweet' button
-            print("Clicking 'Tweet' button...")
-            tweet_button = WebDriverWait(self.driver, 20).until(
+            # Click the Post button
+            print("Clicking 'Post' button...")
+            post_button = WebDriverWait(self.driver, 20).until(
                 EC.element_to_be_clickable((By.CSS_SELECTOR, '[data-testid="tweetButton"]'))
             )
-            tweet_button.click()
+            self.driver.execute_script("arguments[0].click();", post_button)
+            time.sleep(3)
             
-            # Wait for tweet to be posted and get its URL
-            print("Waiting for tweet to be posted...")
-            time.sleep(3)  # Short wait for the post to process
+            # Verify tweet was posted by checking for success toast
+            print("Verifying tweet was posted...")
+            try:
+                WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, '[data-testid="toast"]'))
+                )
+            except TimeoutException:
+                print("Warning: Could not verify tweet posting via toast notification")
             
-            # Wait for the success indicator
-            WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, '[data-testid="toast"]'))
-            )
-            
-            # Navigate to profile to get the tweet URL
+            # Get tweet URL from profile
             print("Getting tweet URL...")
             self.driver.get(f"https://twitter.com/{TWITTER_USERNAME}")
-            time.sleep(2)  # Wait for profile to load
+            time.sleep(3)
             
-            # Get the first tweet's URL
             first_tweet = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, '[data-testid="tweet"]'))
+                EC.presence_of_element_located((By.CSS_SELECTOR, 'article[data-testid="tweet"]'))
             )
             tweet_link = first_tweet.find_element(By.CSS_SELECTOR, 'a[href*="/status/"]')
             tweet_url = tweet_link.get_attribute('href')
@@ -117,6 +127,14 @@ class TwitterPoster:
             print(f"Failed to post tweet: {str(e)}")
             print("Current URL:", self.driver.current_url)
             print("Page source:", self.driver.page_source[:1000])
+            
+            # Take screenshot for debugging
+            try:
+                self.driver.save_screenshot("error_screenshot.png")
+                print("Screenshot saved as error_screenshot.png")
+            except:
+                pass
+                
             raise
 
     def close(self):
