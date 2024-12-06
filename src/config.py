@@ -5,7 +5,7 @@ load_dotenv()
 
 # Google Sheets Configuration
 SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')
-RANGE_NAME = 'Tweets!A2:E'  # Adjust based on your sheet structure
+RANGE_NAME = 'Sheet1!A2:E'
 
 # Claude Desktop Configuration
 CLAUDE_DESKTOP_URL = "https://www.claudedesktop.com/"
